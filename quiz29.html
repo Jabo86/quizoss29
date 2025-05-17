@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Concorso Operatore Socio Sanitario - Modulo 5</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            margin: 0;
+            padding: 20px;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        #timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .question-box {
+            width: 40px;
+            height: 40px;
+            margin: 8px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .question-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question-box.answered {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question h3 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.6em;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+        }
+
+        .option {
+            margin: 10px 0;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateX(5px);
+        }
+
+        .option.correct {
+            background: linear-gradient(90deg, #00eaff, #00b8d4);
+            color: #fff;
+            box-shadow: 0 0 15px #00eaff;
+        }
+
+        .option.wrong {
+            background: linear-gradient(90deg, #ff5252, #d81b60);
+            color: #fff;
+            box-shadow: 0 0 15px #ff5252;
+        }
+
+        .lamp {
+            display: none;
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            transition: transform 0.3s ease;
+        }
+
+        .lamp:hover {
+            transform: scale(1.2);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-style: italic;
+            color: #f0f0f0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.5s ease;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ffd700;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-button:disabled {
+            background: #666;
+            color: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        button#submit {
+            display: block;
+            width: 250px;
+            margin: 20px auto;
+            padding: 15px;
+            background: linear-gradient(45deg, #00eaff, #00b8d4);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.3em;
+            box-shadow: 0 0 15px #00eaff;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button#submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00eaff;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.8em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simulazione Concorso Operatore Socio Sanitario - Modulo 5</h1>
+        <div class="question-nav" id="questionNav"></div>
+        <div id="timer">Tempo rimanente: <span id="time">30:00</span></div>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button class="nav-button" id="prev" disabled>⬅ Indietro</button>
+            <button class="nav-button" id="next">Avanti ➡</button>
+        </div>
+        <button id="submit">Invia Risposte</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Array di domande (121-150) con opzioni mescolate casualmente
+        const questions = [
+            {
+                question: "Dove viene prodotto l’ACTH?",
+                options: ["Nel pancreas", "Nelle ghiandole surrenali", "Nell’ipofisi"],
+                correct: "Nell’ipofisi",
+                explanation: "L’ACTH (ormone adrenocorticotropo) è prodotto dall’ipofisi anteriore, una ghiandola situata alla base del cranio. Stimola le ghiandole surrenali a produrre cortisolo e altri ormoni glucocorticoidi. Il pancreas produce insulina e glucagone, mentre le surrenali sono il bersaglio dell’ACTH. Gli OSS devono conoscere il ruolo dell’ACTH per comprendere condizioni come la sindrome di Cushing o il morbo di Addison, monitorando sintomi come stanchezza o ipertensione e segnalandoli all’infermiere."
+            },
+            {
+                question: "Quale funzione ha l’ACTH?",
+                options: ["Regola il metabolismo del calcio", "Stimola la produzione di cortisolo", "Facilita l’assorbimento del glucosio"],
+                correct: "Stimola la produzione di cortisolo",
+                explanation: "L’ACTH stimola la corteccia surrenalica a produrre cortisolo, un ormone che regola il metabolismo degli zuccheri, la risposta infiammatoria e lo stress. Non regola il calcio né l’assorbimento del glucosio, funzioni di altri ormoni come il paratormone e l’insulina. Gli OSS devono osservare i segni di squilibrio cortisolemico (es. obesità centrale, ipertensione) nei pazienti e collaborare con l’équipe medica per la gestione terapeutica."
+            },
+            {
+                question: "Cos’è la TSH?",
+                options: ["Un enzima digestivo", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "La TSH (ormone tireostimolante) è un ormone prodotto dall’ipofisi anteriore che stimola la tiroide a produrre ormoni tiroidei (T3 e T4). Non è un enzima né un anticorpo. Gli OSS devono conoscere il ruolo della TSH per comprendere le disfunzioni tiroidee, come l’ipertiroidismo o l’ipotiroidismo, e monitorare sintomi correlati, come tachicardia o stanchezza."
+            },
+            {
+                question: "Dove viene prodotta la TSH?",
+                options: ["Nella tiroide", "Nell’ipofisi", "Nel pancreas"],
+                correct: "Nell’ipofisi",
+                explanation: "La TSH è prodotta dall’ipofisi anteriore, che regola la funzione tiroidea attraverso un feedback con gli ormoni T3 e T4. La tiroide è il bersaglio della TSH, mentre il pancreas non è coinvolto. Gli OSS devono sapere dove viene prodotta per comprendere i test di funzionalità tiroidea e supportare i pazienti con disfunzioni endocrine."
+            },
+            {
+                question: "Quale funzione ha la TSH?",
+                options: ["Regola l’equilibrio idro-salino", "Stimola la produzione di ormoni tiroidei", "Facilita la crescita ossea"],
+                correct: "Stimola la produzione di ormoni tiroidei",
+                explanation: "La TSH stimola la tiroide a produrre triiodotironina (T3) e tiroxina (T4), che regolano il metabolismo corporeo. Non regola l’equilibrio idro-salino (funzione dell’aldosterone) né la crescita ossea (ormone della crescita). Gli OSS devono monitorare i sintomi di squilibrio tiroideo, come perdita di peso o aumento di peso, e segnalarli per garantire un’adeguata gestione clinica."
+            },
+            {
+                question: "Cos’è la FSH?",
+                options: ["Un ormone", "Un enzima", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "La FSH (ormone follicolo-stimolante) è un ormone prodotto dall’ipofisi anteriore che regola la funzione delle gonadi, stimolando la maturazione dei follicoli ovarici nelle donne e la spermatogenesi negli uomini. Non è un enzima né un anticorpo. Gli OSS devono conoscere il ruolo della FSH per comprendere le condizioni riproduttive dei pazienti, come l’infertilità, e supportare l’assistenza in ambito ginecologico."
+            },
+            {
+                question: "Dove viene prodotta la FSH?",
+                options: ["Nelle gonadi", "Nell’ipofisi", "Nella tiroide"],
+                correct: "Nell’ipofisi",
+                explanation: "La FSH è prodotta dall’ipofisi anteriore, che controlla la funzione delle gonadi (ovaie e testicoli) attraverso ormoni gonadotropi. Le gonadi sono il bersaglio della FSH, e la tiroide non è coinvolta. Gli OSS devono sapere dove viene prodotta per comprendere i disturbi riproduttivi e collaborare con l’équipe medica."
+            },
+            {
+                question: "Quale funzione ha la FSH?",
+                options: ["Regola il metabolismo degli zuccheri", "Stimola la funzione delle gonadi", "Regola i livelli di calcio"],
+                correct: "Stimola la funzione delle gonadi",
+                explanation: "La FSH stimola la maturazione dei follicoli ovarici nelle donne e la produzione di sperma negli uomini, regolando la funzione riproduttiva. Non regola gli zuccheri né il calcio, funzioni di insulina e paratormone. Gli OSS devono monitorare i pazienti con problemi riproduttivi, osservando sintomi come irregolarità mestruali, e segnalarli."
+            },
+            {
+                question: "Cos’è la LH?",
+                options: ["Un enzima digestivo", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "La LH (ormone luteinizzante) è un ormone prodotto dall’ipofisi anteriore che regola la funzione delle gonadi, inducendo l’ovulazione e la produzione di progesterone nelle donne e la sintesi di testosterone negli uomini. Non è un enzima né un anticorpo. Gli OSS devono conoscere il ruolo della LH per supportare i pazienti in ambito riproduttivo, come durante cicli di fertilità."
+            },
+            {
+                question: "Dove viene prodotta la LH?",
+                options: ["Nella tiroide", "Nell’ipofisi", "Nelle gonadi"],
+                correct: "Nell’ipofisi",
+                explanation: "La LH è prodotta dall’ipofisi anteriore, che regola le gonadi attraverso ormoni gonadotropi come LH e FSH. Le gonadi sono il bersaglio, e la tiroide non è coinvolta. Gli OSS devono sapere dove viene prodotta per comprendere i test ormonali e assistere i pazienti con disturbi riproduttivi."
+            },
+            {
+                question: "Quale funzione ha la LH?",
+                options: ["Stimola la funzione delle gonadi", "Regola il metabolismo del calcio", "Facilita l’assorbimento del glucosio"],
+                correct: "Stimola la funzione delle gonadi",
+                explanation: "La LH induce l’ovulazione e la formazione del corpo luteo nelle donne, e stimola la produzione di testosterone nei testicoli degli uomini, regolando la funzione riproduttiva. Non regola il calcio né il glucosio. Gli OSS devono osservare i segni di squilibrio ormonale, come amenorrea, e collaborare con l’équipe medica."
+            },
+            {
+                question: "Cos’è il progesterone?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "Il progesterone è un ormone steroideo prodotto principalmente dal corpo luteo nelle ovaie (e dalla placenta in gravidanza), che prepara l’utero per l’impianto dell’embrione e previene le contrazioni uterine. Non è un enzima né un anticorpo. Gli OSS devono conoscere il suo ruolo per supportare le pazienti in gravidanza o con problemi ginecologici."
+            },
+            {
+                question: "Dove viene prodotto il progesterone?",
+                options: ["Nell’ipofisi", "Nelle ovaie", "Nella tiroide"],
+                correct: "Nelle ovaie",
+                explanation: "Il progesterone è prodotto principalmente dal corpo luteo nelle ovaie dopo l’ovulazione, e in gravidanza dalla placenta. L’ipofisi regola la sua produzione indirettamente tramite LH, e la tiroide non è coinvolta. Gli OSS devono sapere dove viene prodotto per comprendere le complicanze ginecologiche, come l’aborto spontaneo, e assistere le pazienti."
+            },
+            {
+                question: "Quale funzione ha il progesterone?",
+                options: ["Regola il metabolismo degli zuccheri", "Prepara l’utero per la gravidanza", "Stimola la risposta allo stress"],
+                correct: "Prepara l’utero per la gravidanza",
+                explanation: "Il progesterone prepara l’endometrio per l’impianto dell’embrione, mantiene la gravidanza prevenendo contrazioni uterine e inibisce l’ovulazione durante la gestazione. Non regola gli zuccheri né lo stress. Gli OSS devono monitorare le pazienti in gravidanza per segni di carenza di progesterone, come sanguinamenti, e segnalarli."
+            },
+            {
+                question: "Cos’è l’estrogeno?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "Gli estrogeni sono ormoni steroidei prodotti principalmente dalle ovaie, che regolano lo sviluppo dei caratteri sessuali secondari femminili, il ciclo mestruale e la salute ossea. Non sono enzimi né anticorpi. Gli OSS devono conoscere il loro ruolo per supportare le pazienti con problemi ginecologici o in menopausa."
+            },
+            {
+                question: "Dove viene prodotto l’estrogeno?",
+                options: ["Nella tiroide", "Nelle ovaie", "Nell’ipofisi"],
+                correct: "Nelle ovaie",
+                explanation: "Gli estrogeni sono prodotti principalmente dai follicoli ovarici, sotto il controllo di FSH e LH, con contributi minori da surrenali e tessuto adiposo. L’ipofisi regola la loro produzione indirettamente, e la tiroide non è coinvolta. Gli OSS devono sapere dove vengono prodotti per comprendere i disturbi legati al ciclo mestruale o alla menopausa."
+            },
+            {
+                question: "Quale funzione ha l’estrogeno?",
+                options: ["Regola l’equilibrio idro-salino", "Regola lo sviluppo dei caratteri sessuali secondari", "Facilita l’assorbimento del glucosio"],
+                correct: "Regola lo sviluppo dei caratteri sessuali secondari",
+                explanation: "Gli estrogeni regolano lo sviluppo dei caratteri sessuali secondari femminili (es. seno, distribuzione del grasso), il ciclo mestruale e la densità ossea. Non regolano l’equilibrio idro-salino né il glucosio. Gli OSS devono monitorare i segni di squilibrio estrogenico, come vampate in menopausa, e supportare le pazienti."
+            },
+            {
+                question: "Cos’è il testosterone?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "Il testosterone è un ormone steroideo prodotto principalmente dai testicoli negli uomini e in minore quantità dalle ovaie e surrenali nelle donne. Regola i caratteri sessuali maschili, la massa muscolare e la libido. Non è un enzima né un anticorpo. Gli OSS devono conoscere il suo ruolo per supportare i pazienti con squilibri ormonali, come ipogonadismo."
+            },
+            {
+                question: "Dove viene prodotto il testosterone?",
+                options: ["Nell’ipofisi", "Nei testicoli", "Nella tiroide"],
+                correct: "Nei testicoli",
+                explanation: "Il testosterone è prodotto principalmente dalle cellule di Leydig nei testicoli, sotto il controllo della LH. Nelle donne, piccole quantità sono prodotte da ovaie e surrenali. L’ipofisi regola la sua produzione, e la tiroide non è coinvolta. Gli OSS devono sapere dove viene prodotto per comprendere i disturbi maschili, come la disfunzione erettile."
+            },
+            {
+                question: "Quale funzione ha il testosterone?",
+                options: ["Regola il metabolismo del calcio", "Regola lo sviluppo dei caratteri sessuali maschili", "Prepara l’utero per la gravidanza"],
+                correct: "Regola lo sviluppo dei caratteri sessuali maschili",
+                explanation: "Il testosterone regola lo sviluppo dei caratteri sessuali maschili (es. barba, voce profonda), la spermatogenesi, la massa muscolare e la libido. Non regola il calcio né la gravidanza. Gli OSS devono monitorare i segni di carenza di testosterone, come stanchezza o perdita muscolare, e segnalarli."
+            },
+            {
+                question: "Cos’è l’ormone antidiuretico (ADH)?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "L’ormone antidiuretico (ADH), o vasopressina, è un ormone prodotto dall’ipotalamo e rilasciato dall’ipofisi posteriore. Regola il riassorbimento dell’acqua nei reni, concentrando l’urina. Non è un enzima né un anticorpo. Gli OSS devono conoscere il suo ruolo per gestire pazienti con diabete insipido o sindrome da secrezione inappropriata di ADH (SIADH)."
+            },
+            {
+                question: "Dove viene prodotto l’ADH?",
+                options: ["Nell’ipofisi", "Nel pancreas", "Nella tiroide"],
+                correct: "Nell’ipofisi",
+                explanation: "L’ADH è prodotto dall’ipotalamo e immagazzinato/rilasciato dall’ipofisi posteriore. Il pancreas e la tiroide non sono coinvolti. Gli OSS devono sapere dove viene prodotto per comprendere i disturbi dell’equilibrio idrico, come la poliuria, e monitorare i pazienti."
+            },
+            {
+                question: "Quale funzione ha l’ADH?",
+                options: ["Regola il metabolismo degli zuccheri", "Regola l’assorbimento dell’acqua nei reni", "Stimola la risposta allo stress"],
+                correct: "Regola l’assorbimento dell’acqua nei reni",
+                explanation: "L’ADH aumenta il riassorbimento dell’acqua nei tubuli renali, concentrando l’urina e mantenendo l’equilibrio idrico. Non regola gli zuccheri né lo stress. Gli OSS devono monitorare il volume urinario e i segni di disidratazione o sovraccarico idrico nei pazienti con alterazioni dell’ADH."
+            },
+            {
+                question: "Cos’è l’ossitocina?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "L’ossitocina è un ormone prodotto dall’ipotalamo e rilasciato dall’ipofisi posteriore, che stimola le contrazioni uterine durante il parto e la secrezione di latte durante l’allattamento. Non è un enzima né un anticorpo. Gli OSS devono conoscere il suo ruolo per supportare le pazienti in travaglio o durante l’allattamento."
+            },
+            {
+                question: "Dove viene prodotta l’ossitocina?",
+                options: ["Nella tiroide", "Nell’ipofisi", "Nel pancreas"],
+                correct: "Nell’ipofisi",
+                explanation: "L’ossitocina è prodotta dall’ipotalamo e immagazzinata/rilasciata dall’ipofisi posteriore. La tiroide e il pancreas non sono coinvolti. Gli OSS devono sapere dove viene prodotta per comprendere il suo utilizzo in ostetricia e supportare le pazienti durante il parto."
+            },
+            {
+                question: "Quale funzione ha l’ossitocina?",
+                options: ["Regola l’equilibrio idro-salino", "Stimola le contrazioni uterine e l’allattamento", "Regola il metabolismo del calcio"],
+                correct: "Stimola le contrazioni uterine e l’allattamento",
+                explanation: "L’ossitocina stimola le contrazioni uterine durante il parto e facilita la secrezione di latte durante l’allattamento, agendo sui muscoli lisci dell’utero e delle ghiandole mammarie. Non regola l’equilibrio idro-salino né il calcio. Gli OSS devono monitorare le pazienti in travaglio per segni di distress e supportare l’allattamento."
+            },
+            {
+                question: "Cos’è la prolattina?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "La prolattina è un ormone prodotto dall’ipofisi anteriore che stimola la produzione di latte nelle ghiandole mammarie durante la gravidanza e l’allattamento. Non è un enzima né un anticorpo. Gli OSS devono conoscere il suo ruolo per supportare le pazienti che allattano e segnalare sintomi di iperprolattinemia, come galattorrea."
+            },
+            {
+                question: "Dove viene prodotta la prolattina?",
+                options: ["Nelle ovaie", "Nell’ipofisi", "Nella tiroide"],
+                correct: "Nell’ipofisi",
+                explanation: "La prolattina è prodotta dall’ipofisi anteriore, sotto il controllo di fattori ipotalamici. Le ovaie e la tiroide non sono coinvolte. Gli OSS devono sapere dove viene prodotta per comprendere i disturbi legati all’allattamento o all’iperprolattinemia."
+            },
+            {
+                question: "Quale funzione ha la prolattina?",
+                options: ["Regola il metabolismo degli zuccheri", "Stimola la produzione di latte", "Regola i livelli di calcio"],
+                correct: "Stimola la produzione di latte",
+                explanation: "La prolattina stimola la sintesi e la secrezione di latte nelle ghiandole mammarie durante la gravidanza e l’allattamento. Non regola gli zuccheri né il calcio. Gli OSS devono supportare le pazienti che allattano, osservando segni di difficoltà nella lattazione e collaborando con l’équipe."
+            },
+            {
+                question: "Cos’è l’ormone della crescita (GH)?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "L’ormone della crescita (GH) è un ormone prodotto dall’ipofisi anteriore che stimola la crescita ossea e muscolare nei bambini e regola il metabolismo cellulare negli adulti. Non è un enzima né un anticorpo. Gli OSS devono conoscere il suo ruolo per monitorare pazienti con acromegalia o nanismo ipofisario."
+            },
+            {
+                question: "Dove viene prodotto l’ormone della crescita?",
+                options: ["Nella tiroide", "Nell’ipofisi", "Nel pancreas"],
+                correct: "Nell’ipofisi",
+                explanation: "L’ormone della crescita è prodotto dall’ipofisi anteriore, sotto il controllo dell’ipotalamo. La tiroide e il pancreas non sono coinvolti. Gli OSS devono sapere dove viene prodotto per comprendere i disturbi della crescita e supportare i pazienti con terapie ormonali."
+            },
+            {
+                question: "Quale funzione ha l’ormone della crescita?",
+                options: ["Regola l’equilibrio idro-salino", "Stimola la crescita e il metabolismo cellulare", "Facilita l’assorbimento del glucosio"],
+                correct: "Stimola la crescita e il metabolismo cellulare",
+                explanation: "L’ormone della crescita (GH) stimola la crescita di ossa e tessuti nei bambini e promuove il metabolismo proteico e lipidico negli adulti. Non regola l’equilibrio idro-salino né il glucosio. Gli OSS devono monitorare i segni di squilibrio del GH, come ingrossamento delle estremità, e segnalarli."
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        // Carica i quadratini di navigazione
+        function loadQuestionNav() {
+            const navDiv = document.getElementById("questionNav");
+            questions.forEach((_, index) => {
+                const box = document.createElement("div");
+                box.classList.add("question-box");
+                box.textContent = index + 1;
+                box.addEventListener("click", () => {
+                    showQuestion(index);
+                });
+                navDiv.appendChild(box);
+            });
+        }
+
+        // Carica il quiz
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-value="${opt}">
+                            <input type="radio" name="q${index}" value="${opt}" id="q${index}_${i}">
+                            <label for="q${index}_${i}">${opt}</label>
+                            <span class="lamp" id="lamp-${index}-${i}">💡</span>
+                        </div>
+                    `).join("")}
+                    <div class="explanation" id="exp-${index}">${q.explanation}</div>
+                `;
+                quizDiv.appendChild(questionDiv);
+
+                // Aggiungi evento per accendere il quadratino
+                const radios = questionDiv.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener("change", () => {
+                        document.querySelectorAll(".question-box")[index].classList.add("answered");
+                    });
+                });
+            });
+            showQuestion(0); // Mostra la prima domanda
+        }
+
+        // Mostra la domanda corrente
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("active"));
+            document.getElementById(`question-${index}`).classList.add("active");
+            currentQuestion = index;
+
+            // Gestione stato pulsanti
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").disabled = currentQuestion === questions.length - 1;
+        }
+
+        // Timer (30 minuti)
+        let timeLeft = 30 * 60;
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("time").textContent = 
+                    `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswers();
+                }
+            }, 1000);
+        }
+
+        // Controllo risposte e feedback visivo
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const options = document.querySelectorAll(`#question-${index} .option`);
+
+                options.forEach(option => {
+                    const value = option.getAttribute("data-value");
+                    if (value === q.correct) {
+                        option.classList.add("correct");
+                        const lamp = option.querySelector(".lamp");
+                        lamp.style.display = "inline";
+                        lamp.addEventListener("click", () => {
+                            const explanation = document.getElementById(`exp-${index}`);
+                            explanation.style.display = "block";
+                        });
+                    }
+                });
+
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                    } else {
+                        selected.parentElement.classList.add("wrong");
+                    }
+                }
+            });
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = `Punteggio: ${score} / ${questions.length}`;
+            document.getElementById("submit").disabled = true;
+            document.getElementById("prev").disabled = true;
+            document.getElementById("next").disabled = true;
+
+            // Disabilita i radio button dopo l'invio
+            document.querySelectorAll("input[type=radio]").forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+
+        // Inizializzazione
+        window.onload = () => {
+            loadQuestionNav();
+            loadQuiz();
+            startTimer();
+
+            document.getElementById("prev").addEventListener("click", () => {
+                if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            });
+
+            document.getElementById("next").addEventListener("click", () => {
+                if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
+            });
+
+            document.getElementById("submit").addEventListener("click", checkAnswers);
+        };
+    </script>
+</body>
+</html>
